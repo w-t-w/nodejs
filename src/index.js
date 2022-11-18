@@ -265,3 +265,147 @@
 // server.listen(PORT, function () {
 //     console.log(`Server is running at localhost:${PORT}~`);
 // });
+
+// 13. Express 改进网页版石头剪刀布
+// Express 的特性:
+// 1. 强大的路由分发
+// 2. 对于 http 方面有自己的一套封装,简化 http 操作,比如 302 重定向机制
+// 3. 可配合多种强大的模板引擎
+// const express = require('express');
+// const {resolve} = require('path');
+// const {readFileSync} = require('fs');
+// const game = require('./server');
+// const app = express();
+// const PORT = 3000;
+// let count = 0,
+//     sameCount = 0,
+//     lastPick = null;
+// app.get('/favicon.ico', function (req, res) {
+//     res.status(200);
+//     res.send();
+// });
+// app.get('/game', function (req, res, next) {
+//     if (count >= 3) {
+//         res.status(500);
+//         res.send('我再也不跟你玩儿了!');
+//     }
+//     next();
+//     if (res.won) {
+//         count++;
+//     }
+// }, function (req, res, next) {
+//     if (sameCount >= 2) {
+//         res.status(400);
+//         res.send('你作弊!');
+//         count = 3;
+//     }
+//     next();
+// }, function (req, res, next) {
+//     const {action} = req.query;
+//     const gameResult = game(action);
+//     if (lastPick && lastPick === action) {
+//         sameCount++;
+//     } else {
+//         sameCount = 0;
+//     }
+//     lastPick = action;
+//     res.gameResult = gameResult;
+//     next();
+// }, function (req, res) {
+//     const {gameResult} = res;
+//     setTimeout(function () {
+//         res.status(200);
+//         if (gameResult === 0) {
+//             res.send('平局!');
+//         } else if (gameResult === -1) {
+//             res.send('你输了!');
+//         } else {
+//             res.send('你赢了!');
+//             res.won = true;
+//         }
+//     }, 100);
+// });
+// app.get('/', function (req, res) {
+//     res.send(readFileSync(resolve(process.cwd(), './src/index.html'), 'utf-8'));
+// });
+// app.listen(3000, function () {
+//     console.log(`Server is running at localhost:${PORT}`);
+// });
+
+// 14. Koa 改进网页版石头剪刀布
+// const Koa = require('koa');
+// const {readFileSync} = require('fs');
+// const path = require('path');
+// const mount = require('koa-mount');
+// const game = require('./server');
+// const PORT = 3000;
+// let count = 0,
+//     sameCount = 0,
+//     lastPick = null;
+// const koa = new Koa();
+// const gameKoa = new Koa();
+// koa.use(mount('/favicon.ico', function ({response}) {
+//     response.status = 200;
+//     response.body = '';
+// }));
+// koa.use(mount('/game', gameKoa));
+// koa.use(mount('/', function ({response}) {
+//     response.status = 200;
+//     response.body = readFileSync(path.resolve(process.cwd(), './src/index.html'), 'utf-8');
+// }));
+// gameKoa.use(async function (ctx, next) {
+//     const {response} = ctx;
+//     if (count >= 3) {
+//         response.status = 500;
+//         response.body = '再也不跟你玩儿了!';
+//         return;
+//     }
+//
+//     await next();
+//
+//     if (ctx.won) {
+//         count++;
+//     }
+// });
+// gameKoa.use(async function (ctx, next) {
+//     const {response} = ctx;
+//     if (sameCount >= 2) {
+//         response.status = 400;
+//         response.body = '你作弊!';
+//         count = 3;
+//         return;
+//     }
+//     await next();
+// });
+// gameKoa.use(async function (ctx, next) {
+//     const {action} = ctx.request.query;
+//     const gameResult = game(action);
+//     if (lastPick && lastPick === action) {
+//         sameCount++;
+//     } else {
+//         sameCount = 0;
+//     }
+//     lastPick = action;
+//     ctx.gameResult = gameResult;
+//     await next();
+// });
+// gameKoa.use(async function (ctx) {
+//     const {response, gameResult} = ctx;
+//     await new Promise(resolve => {
+//         setTimeout(() => {
+//             response.status = 200;
+//             if (gameResult === 0) {
+//                 response.body = '平局!'
+//             } else if (gameResult === -1) {
+//                 response.body = '你输了!';
+//             } else {
+//                 response.body = '你赢了!'
+//                 ctx.won = true;
+//             }
+//             resolve();
+//         }, 500);
+//     });
+// });
+// koa.listen(3000, function () {
+//     console.log(`Server is running at ${PORT}`);
+// });
