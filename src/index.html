@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <title>nodejs</title>
+    <style>
+        #showContent {
+            width: 800px;
+            height: 600px;
+            background-color: darkgrey;
+            font-weight: bolder;
+            font-size: 18px;
+            padding: 8px 4px;
+            overflow: auto;
+            margin: 12px 0;
+        }
+    </style>
+</head>
+<body>
+<main id="showContent">
+
+</main>
+</body>
+<script type="text/javascript">
+    var container = document.getElementById('showContent');
+    var buttons = [{id: 'rock', text: '石头'}, {id: 'paper', text: '布'}, {id: 'scissors', text: '剪刀'}];
+    var nodeLists = buttons.map(({id, text}) => {
+        var button = document.createElement('button');
+        button.innerText = text;
+        button.id = id;
+        button.addEventListener('click', function (e) {
+            fetch(`http://localhost:3000/game?action=${id}`).then(res => {
+                return res.text();
+            }).then(textRes => {
+                var div = document.createElement('div');
+                div.innerText = textRes;
+                container.append(div);
+            });
+        })
+        return button;
+    });
+    nodeLists.forEach(item => {
+        document.body.append(item);
+    });
+</script>
+</html>
