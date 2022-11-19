@@ -409,3 +409,194 @@
 // koa.listen(3000, function () {
 //     console.log(`Server is running at ${PORT}`);
 // });
+
+// 15. Buffer
+// const buffer_nodejs = Buffer.from('I love nodejs~');
+// const buffer_array = Buffer.from([1, 2, 3, 4]);
+// const buffer_alloc = Buffer.alloc(20);
+// buffer_array.writeInt16LE(12, 2);
+// buffer_array.writeInt16BE(12, 2);
+// buffer_alloc.writeInt32LE(512, 1);
+// console.log(buffer_nodejs);
+// console.log(buffer_array);
+// console.log(buffer_alloc);
+
+// 16. Socket 单工通信
+// const Socket = require('net').Socket;
+// const PORT = 4000;
+// const socket = new Socket({});
+// socket.connect({
+//     host: '127.0.0.1',
+//     port: PORT
+// });
+// socket.write(Buffer.from('I love nodejs!!!!'));
+
+// 17. Socket 半双工通信
+// const Socket = require('net').Socket;
+// const PORT = 4000;
+// const socket = new Socket({});
+// socket.connect({
+//     host: '127.0.0.1',
+//     port: PORT
+// });
+// const lessonIds = [
+//     136797,
+//     136798,
+//     136799,
+//     136800,
+//     136801,
+//     136803,
+//     136804,
+//     136806,
+//     136807,
+//     136808,
+//     136809,
+//     141994,
+//     143517,
+//     143557,
+//     143564,
+//     143644,
+//     146470,
+//     146569,
+//     146582
+// ];
+// let id = Math.floor(Math.random() * lessonIds.length);
+// function encode(id) {
+//     const buffer = Buffer.alloc(4);
+//     buffer.writeInt32BE(lessonIds[id]);
+//     return buffer;
+// }
+// socket.write(encode(id));
+// socket.on('data', function (buffer) {
+//     console.log(lessonIds[id], buffer.toString());
+//     id = Math.floor(Math.random() * lessonIds.length);
+//     socket.write(encode(id));
+// });
+
+// 18. Socket 全双工通信
+// const Socket = require('net').Socket;
+// const PORT = 4000;
+// const socket = new Socket({});
+// const lessonIds = [
+//     136797,
+//     136798,
+//     136799,
+//     136800,
+//     136801,
+//     136803,
+//     136804,
+//     136806,
+//     136807,
+//     136808,
+//     136809,
+//     141994,
+//     143517,
+//     143557,
+//     143564,
+//     143644,
+//     146470,
+//     146569,
+//     146582
+// ];
+// socket.connect({
+//     host: '127.0.0.1',
+//     port: PORT
+// });
+// let id,
+//     seq = 0;
+// for (let i = 0; i < 100; i++) {
+//     id = Math.floor(Math.random() * lessonIds.length);
+//     socket.write(encode(id));
+// }
+// socket.on('data', function (buffer) {
+//     const seqBuffer = buffer.slice(0, 2),
+//         resultBuffer = buffer.slice(2);
+//     console.log(seqBuffer.readInt16BE(), resultBuffer.toString());
+//     id = Math.floor(Math.random() * lessonIds.length);
+//     socket.write(encode(id));
+// });
+// function encode(id) {
+//     const buffer = Buffer.alloc(6);
+//     buffer.writeInt16BE(seq);
+//     buffer.writeInt32BE(lessonIds[id], 2);
+//     console.log(seq, lessonIds[id]);
+//     seq++;
+//     return buffer;
+// }
+
+// 19. Socket 全双工通信粘包、包不完整
+// const Socket = require('net').Socket;
+// const PORT = 4000;
+// const socket = new Socket({});
+// let oldBuffer = null;
+// socket.connect({
+//     host: '127.0.0.1',
+//     port: PORT
+// });
+// const lessonIds = [
+//     136797,
+//     136798,
+//     136799,
+//     136800,
+//     136801,
+//     136803,
+//     136804,
+//     136806,
+//     136807,
+//     136808,
+//     136809,
+//     141994,
+//     143517,
+//     143557,
+//     143564,
+//     143644,
+//     146470,
+//     146569,
+//     146582
+// ];
+// let id,
+//     seq = 0;
+// for (let i = 0; i < 100; i++) {
+//     id = Math.floor(Math.random() * lessonIds.length);
+//     socket.write(encode(id));
+// }
+// socket.on('data', function (buffer) {
+//     if (oldBuffer) {
+//         buffer = Buffer.concat([oldBuffer, buffer]);
+//     }
+//     let packageLength = 0;
+//     while (packageLength = checkComplete(buffer)) {
+//         const package = buffer.slice(0, packageLength);
+//         buffer = buffer.slice(packageLength);
+//         const {seq, data} = decode(package);
+//         console.log(`包 ${seq} 获取的课程数据为: ${data}`);
+//     }
+//     oldBuffer = buffer;
+// });
+// function encode(id) {
+//     const body = Buffer.alloc(4);
+//     body.writeInt32BE(lessonIds[id]);
+//     const header = Buffer.alloc(6);
+//     header.writeInt16BE(seq);
+//     header.writeInt32BE(body.length, 2);
+//     console.log(`包 ${seq} 发送的课程 ID 为: ${lessonIds[id]}`);
+//     seq++;
+//     return Buffer.concat([header, body]);
+// }
+// function decode(buffer) {
+//     const seqBuffer = buffer.slice(0, 2),
+//         resultBuffer = buffer.slice(6);
+//     const seq = seqBuffer.readInt16BE(),
+//         result = resultBuffer.toString().trim();
+//     return {
+//         seq,
+//         data: result
+//     }
+// }
+// function checkComplete(buffer) {
+//     if (buffer.length < 6) {
+//         return 0;
+//     }
+//     const bodyLength = buffer.readInt32BE(2);
+//     return 6 + bodyLength;
+// }
