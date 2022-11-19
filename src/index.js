@@ -600,3 +600,146 @@
 //     const bodyLength = buffer.readInt32BE(2);
 //     return 6 + bodyLength;
 // }
+
+// 20. Socket 全双工通信粘包、包不完整 2.0
+// const Socket = require('net').Socket;
+// const PORT = 4000;
+// const socket = new Socket({});
+// socket.connect({
+//     host: '127.0.0.1',
+//     port: PORT
+// });
+// const lessonIds = [
+//     136797,
+//     136798,
+//     136799,
+//     136800,
+//     136801,
+//     136803,
+//     136804,
+//     136806,
+//     136807,
+//     136808,
+//     136809,
+//     141994,
+//     143517,
+//     143557,
+//     143564,
+//     143644,
+//     146470,
+//     146569,
+//     146582
+// ];
+// let id,
+//     oldBuffer = null,
+//     seq = 0;
+// for (let i = 0; i < 100; i++) {
+//     id = Math.floor(Math.random() * lessonIds.length);
+//     socket.write(encode(id));
+// }
+// socket.on('data', function (buffer) {
+//     if (oldBuffer) {
+//         buffer = Buffer.concat([oldBuffer, buffer]);
+//     }
+//     let packageLength = 0;
+//     while (packageLength = checkComplete(buffer)) {
+//         const package = buffer.slice(0, packageLength);
+//         buffer = buffer.slice(packageLength);
+//         const {seq, data} = decode(package);
+//         console.log(`包 ${seq} 接收到的数据为: ${data}`);
+//     }
+//     oldBuffer = buffer;
+// });
+// function encode(id) {
+//     const body = Buffer.alloc(4);
+//     body.writeInt32BE(lessonIds[id]);
+//     const header = Buffer.alloc(6);
+//     header.writeInt16BE(seq);
+//     header.writeInt32BE(body.length, 2);
+//     console.log(`包 ${seq} 发送的课程 ID 为: ${lessonIds[id]}`);
+//     seq++;
+//     return Buffer.concat([header, body]);
+// }
+// function decode(buffer) {
+//     const seqBuffer = buffer.slice(0, 2),
+//         resultBuffer = buffer.slice(6);
+//     const seq = seqBuffer.readInt16BE(),
+//         data = resultBuffer.toString().trim();
+//     return {
+//         seq,
+//         data
+//     };
+// }
+// function checkComplete(buffer) {
+//     if (buffer.length < 6) {
+//         return 0;
+//     }
+//     const bodyLength = buffer.readInt32BE(2);
+//     return 6 + bodyLength;
+// }
+
+// 21. Buffer protocol-buffers
+// const protobuf = require('protocol-buffers');
+// const {readFileSync} = require('fs');
+// const {resolve} = require('path');
+// const message = protobuf(readFileSync(resolve(process.cwd(), './src/data.proto')));
+// const data = {
+//     136797: "01 | 课程介绍",
+//     136798: "02 | 内容综述",
+//     136799: "03 | Node.js是什么？",
+//     136800: "04 | Node.js可以用来做什么？",
+//     136801: "05 | 课程实战项目介绍",
+//     136803: "06 | 什么是技术预研？",
+//     136804: "07 | Node.js开发环境安装",
+//     136806: "08 | 第一个Node.js程序：石头剪刀布游戏",
+//     136807: "09 | 模块：CommonJS规范",
+//     136808: "10 | 模块：使用模块规范改造石头剪刀布游戏",
+//     136809: "11 | 模块：npm",
+//     141994: "12 | 模块：Node.js内置模块",
+//     143517: "13 | 异步：非阻塞I/O",
+//     143557: "14 | 异步：异步编程之callback",
+//     143564: "15 | 异步：事件循环",
+//     143644: "16 | 异步：异步编程之Promise",
+//     146470: "17 | 异步：异步编程之async/await",
+//     146569: "18 | HTTP：什么是HTTP服务器？",
+//     146582: "19 | HTTP：简单实现一个HTTP服务器"
+// };
+// const lessonIds = [
+//     136797,
+//     136798,
+//     136799,
+//     136800,
+//     136801,
+//     136803,
+//     136804,
+//     136806,
+//     136807,
+//     136808,
+//     136809,
+//     141994,
+//     143517,
+//     143557,
+//     143564,
+//     143644,
+//     146470,
+//     146569,
+//     146582
+// ];
+// const proto_data = Object.entries(data).map(([key, value]) => {
+//     return message.LESSON.encode({id: key, name: value});
+// });
+// console.log(proto_data);
+// const source_data = proto_data.map(item => {
+//     return message.LESSON.decode(item);
+// });
+// console.log(source_data);
+// const resource_data = Object.fromEntries(source_data.map(item => {
+//     return [item.id, item.name];
+// }));
+// console.log(resource_data);
+// const proto_list = message.LIST.encode({
+//     list: lessonIds
+// });
+// console.log(proto_list);
+// const source_list = message.LIST.decode(proto_list);
+// console.log(source_list);

@@ -1,0 +1,12 @@
+enum ID {
+  id = 1;
+}
+
+message LESSON {
+  required int32 id = 1;
+  required string name = 2;
+}
+
+message LIST {
+  repeated int32 list = 1;
+}
