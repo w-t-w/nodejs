@@ -743,3 +743,45 @@
 // console.log(proto_list);
 // const source_list = message.LIST.decode(proto_list);
 // console.log(source_list);
+
+// 22. ES6 模板字符串 模板引擎
+// const ejs = require('ejs');
+// const user = {name: 'wtw'};
+// const es6 = `<h2>${user.name}</h2>`;
+// console.log(es6);
+// const ejsMock = ejs.render('<h2><%= user.name %></h2>', {user});
+// console.log(ejsMock);
+// const vm = require('vm');
+// const user = {name: 'wtw'};
+// const result = vm.runInNewContext('`<h2>${user.name}${_(\"<script />\")}</h2>`', {
+//     user,
+//     // 预防 xss 攻击
+//     _(markup) {
+//         if (!markup) return '';
+//         return markup.replace(/&/g, '&amp;')
+//             .replace(/</g, '&lt;')
+//             .replace(/>/g, '&gt;')
+//             .replace(/'/g, '&#39')
+//             .replace(/"/g, "&quot;");
+//     }
+// });
+// console.log('result:', result);
+// const vm = require('vm');
+// const template = {
+//     templateA: '`<h2>${include("templateB")}</h2>`',
+//     templateB: '`<p>I love nodejs~~~</p>`'
+// };
+// const context = {
+//     include(templateName) {
+//         return template[templateName]();
+//     }
+// };
+// Object.entries(template).forEach(([key, value]) => {
+//     template[key] = vm.runInNewContext(`
+//         (function() {
+//             return ${value}
+//         })
+//     `, context);
+// });
+// const result = template['templateA']();
+// console.log(result);
