@@ -785,3 +785,37 @@
 // });
 // const result = template['templateA']();
 // console.log(result);
+
+// 23. Event Loop
+// setTimeout(() => {
+//     setTimeout(() => {
+//         console.log('setTimeout');
+//     }, 0);
+//     setImmediate(() => {
+//         console.log('setImmediate');
+//     });
+// }, 0);
+// setTimeout(() => {
+//     console.log('setTimeout');
+// }, 0);
+// setImmediate(() => {
+//     console.log('setImmediate');
+// });
+// setImmediate(() => {
+//     setTimeout(() => {
+//         console.log('setTimeout');
+//     }, 0);
+//     setImmediate(() => {
+//         console.log('setImmediate');
+//     });
+// });
+// const fs = require('fs'),
+//     path = require('path');
+// fs.readFile(path.resolve(process.cwd(), './src/index.html'), 'utf-8', (err, result) => {
+//     setTimeout(() => {
+//         console.log('setTimeout');
+//     }, 0);
+//     setImmediate(() => {
+//         console.log('setImmediate');
+//     });
+// });
